@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Real-time Speech Recognition</title>
+</head>
+<body>
+    <h1>Real-time Speech Recognition</h1>
+    <button id="startRecording">Start Recording</button>
+    <button id="stopRecording" disabled>Stop Recording</button>
+    <div id="transcription"></div>
+
+    <script>
+        const recognition = new webkitSpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        const startButton = document.getElementById('startRecording');
+        const stopButton = document.getElementById('stopRecording');
+        const transcriptionDiv = document.getElementById('transcription');
+
+        startButton.addEventListener('click', () => {
+            recognition.start();
+            startButton.disabled = true;
+            stopButton.disabled = false;
+        });
+
+        stopButton.addEventListener('click', () => {
+            recognition.stop();
+            startButton.disabled = false;
+            stopButton.disabled = true;
+        });
+
+        recognition.onresult = (event) => {
+            let interimTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    transcriptionDiv.innerHTML += transcript + '<br>';
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+            if (interimTranscript.trim() !== '') {
+                transcriptionDiv.innerHTML = interimTranscript;
+            }
+        };
+    </script>
+</body>
+</html>
